@@ -1,0 +1,289 @@
+{
+	"name": "Bento Prop OSC Control",
+	"type": "OSC",
+	"path": "Hardware",
+	
+	"version": "1.0.0",
+	"description": "Module to control Bento LED props (e.g. flowtoy creators clubs) through the OSC command API",
+	"url": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module",
+	"downloadURL": "https://github.com/jonglissimo/Bento-OSC-Chataigne-Module/archive/master.zip",
+	
+	"hasInput": true,
+	"hasOutput": true, 
+	"hideDefaultCommands": true,
+	"hideDefaultParameters": [
+		"autoRange",
+		"autoFeedback",
+		"pass_through",
+		"input",
+		"outputs"
+	],
+	
+	"defaults": {
+		"autoAdd": true,
+		"oscInput": {
+			"localPort": 10000
+		},
+		"OSC Outputs": {
+			"OSC Output": {
+				"local": false,
+				"remoteHost": "192.168.0.255",
+				"remotePort": 9000
+			}
+		}
+	},
+	
+	"parameters": {
+		"Local IP": {
+			"type": "Enum",
+			"description": "IP address of this computer",
+			"default": "192.168.1.102"
+		},
+		"Broadcast IP": {
+			"type": "String", 
+			"description": "IP address for broadcasting to all Bento props",
+			"default": "0.0.0.0"
+		}
+	},
+	
+	"scripts": [
+		"bento-osc.js"
+	],
+	
+	"values": {
+	},
+	
+	"commands": {
+		"Color": {
+			"menu": "",
+			"callback": "setColor",
+			"parameters": {
+				"Color": {
+					"type": "Color",
+					"default": [1,0,0,1], 
+					"useForMapping": true
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Point": {
+			"menu": "",
+			"callback": "setPoint",
+			"parameters": {
+				"Color": {
+					"type": "Color",
+					"default": [1,0,0,1], 
+					"useForMapping": true
+				},
+				"Position": {
+					"type": "Float",
+					"default": 0.5,
+					"min": 0,
+					"max": 1
+				}, 
+				"Size": {
+					"type": "Float",
+					"default": 0,
+					"min": 0,
+					"max": 1
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"RGB Brightness": {
+			"menu": "",
+			"callback": "setRGBBrightness",
+			"parameters": {
+				"Brightness": {
+					"type": "Float",
+					"default": 0.5,
+					"min": 0,
+					"max": 1,
+					"useForMapping": true
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		}, 
+
+		"IR Brightness": {
+			"menu": "",
+			"callback": "setIRBrightness",
+			"parameters": {
+				"Brightness": {
+					"type": "Float",
+					"default": 0.5,
+					"min": 0,
+					"max": 1,
+					"useForMapping": true
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		}, 
+
+		"Player Load": {
+			"menu": "",
+			"callback": "playerLoad",
+			"parameters": {
+				"Sequence name": {
+					"type": "String"
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Play": {
+			"menu": "",
+			"callback": "playerPlay",
+			"parameters": {
+				"Time": {
+					"type": "Float",
+					"default": 0.0,
+					"min": 0
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Pause": {
+			"menu": "",
+			"callback": "playerPause",
+			"parameters": {
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Resume": {
+			"menu": "",
+			"callback": "playerResume",
+			"parameters": {
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Stop": {
+			"menu": "",
+			"callback": "playerStop",
+			"parameters": {
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Seek": {
+			"menu": "",
+			"callback": "playerSeek",
+			"parameters": {
+				"Time": {
+					"type": "Float",
+					"default": 0,
+					"min": 0,
+					"useForMapping": true
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Id": {
+			"menu": "",
+			"callback": "playerId",
+			"parameters": {
+				"Enable": {
+					"type": "Boolean",
+					"default": true
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Delete": {
+			"menu": "",
+			"callback": "playerDelete",
+			"parameters": {
+				"Name": {
+					"type": "String"
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Imu Enable": {
+			"menu": "",
+			"callback": "imuEnable",
+			"parameters": {
+				"Enable": {
+					"type": "Boolean",
+					"default": true
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Imu Update Rate": {
+			"menu": "",
+			"callback": "imuUpdateRate",
+			"parameters": {
+				"fps": {
+					"type": "Integer",
+					"default": 20,
+					"min": 1,
+					"max": 100
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Restart": {
+			"menu": "",
+			"callback": "restart",
+			"parameters": {
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Sleep": {
+			"menu": "",
+			"callback": "sleep",
+			"parameters": {
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Yo": {
+			"menu": "",
+			"callback": "yo"
+		}
+	}
+}
