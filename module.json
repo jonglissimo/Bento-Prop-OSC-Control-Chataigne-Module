@@ -34,16 +34,6 @@
 	},
 	
 	"parameters": {
-		"Local IP": {
-			"type": "Enum",
-			"description": "IP address of this computer",
-			"default": "192.168.1.102"
-		},
-		"Broadcast IP": {
-			"type": "String", 
-			"description": "IP address for broadcasting to all Bento props",
-			"default": "0.0.0.0"
-		}
 	},
 	
 	"scripts": [
@@ -284,6 +274,11 @@
 		"Yo": {
 			"menu": "",
 			"callback": "yo"
+		},
+
+		"Log Props": {
+			"menu": "",
+			"callback": "logProps"
 		}
 	}
 }

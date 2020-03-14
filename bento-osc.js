@@ -1,9 +1,5 @@
 var valuesContainer = local.values;
 var propsContainer;
-var localIPParameter = local.parameters.localIP;
-var localIP = localIPParameter.get();
-var broadcastIPParameter = local.parameters.broadcastIP;
-var broadcastIP = local.parameters.broadcastIP.get();
 var detectTrigger = local.parameters.addTrigger("Detect Props", "Detect props");
 var clearTrigger = local.parameters.addTrigger("Clear Props", "Clear props");
 var lastUpdateTime = 0;
@@ -12,8 +8,9 @@ var remotePort = 9000;
 var props = [];
 
 function init() {
-	propsContainer = valuesContainer.addContainer("Props", "List of props");
-	initLocalIPEnum();
+	clearProps();
+	detectProps();
+
 	setReadonly();
 	collapseContainers();
 	script.setUpdateRate(10);
@@ -31,23 +28,10 @@ function update() {
 function moduleParameterChanged(param) {
 	if (param.is(local.outActivity)) return;
 	
-	if (param.is(localIPParameter)) {
-		if (localIPParameter.get() != "") {
-			localIP = localIPParameter.get();
-			broadcastIPParameter.set(getBroadcastIP(localIP));
-		}
-	} else if (param.is(broadcastIPParameter)) {
-		if (broadcastIPParameter.get() != "") {
-			broadcastIP = broadcastIPParameter.get();
-			var oscOutput = local.getChild("Parameters").oscOutputs.oscOutput.remoteHost;
-			if (oscOutput) oscOutput.set(broadcastIP);
-		}
-	} else if (param.is(detectTrigger)) {
+	if (param.is(detectTrigger)) {
 		detectProps();
 	} else if (param.is(clearTrigger)) {
 		clearProps();
-	} else if (param.is(local.getChild("Parameters").oscOutputs.oscOutput.remotePort)) {
-		remotePort = local.getChild("Parameters").oscOutputs.oscOutput.remotePort.get();
 	}
 }
 
@@ -59,14 +43,6 @@ function moduleValueChanged(param) {
 		var index = getIndexFromContainer(param);
 		sleep(index);
 	}
-}
-
-function getIndexFromContainer(param) {
-	parentName = param.getParent().name;
-	var p = parentName.split("_");
-	var index = p[0];
-	
-	return index;
 }
 
 function oscEvent(address, args) {
@@ -145,14 +121,6 @@ function createPropContainer(prop) {
 	prop.batteryParameter = batteryParamter;
 }
 
-function logProps() {
-	for (var i = 0; i < props.length; i++) {
-		var cur = props[i];
-		script.log("Prop " + i + ": " + cur.ip + ", " + cur.mac + ", " + cur.name);
-	}
-}
-
-
 
 
 //////////////////
@@ -161,9 +129,17 @@ function logProps() {
 
 function setColor(color, propIndex) {
 	var oscAddress = "/rgb/fill";
-	
+	// var propIndexType = typeof propIndex;
+	// var propIndexInt = parseInt(propIndex);
+	// var propIndexLength = propIndex.length;
+
+	// script.log("prop Index: " + propIndex + ", type: " + propIndexType + ", Int value: " + propIndexInt + ", length: " + propIndexLength);
+
 	if (propIndex == "") {
-		local.send(oscAddress, color[0], color[1], color[2]);
+		for (var i = 0; i < props.length; i++) {
+			var ip = props[i].ip;
+			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
+		}
 	} else {
 		var ip = getPropIP(propIndex);
 		local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);	
@@ -174,7 +150,10 @@ function setPoint(color, position, size, propIndex) {
 	var oscAddress = "/rgb/point";
 	
 	if (propIndex == "") {
-		local.send(oscAddress, color[0], color[1], color[2], position, size);
+		for (var i = 0; i < props.length; i++) {
+			var ip = props[i].ip;
+			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
+		}
 	} else {
 		var ip = getPropIP(propIndex);
 		local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
@@ -238,12 +217,31 @@ function imuUpdateRate(fps, propIndex) {
 }
 
 function yo() {
-	local.send("/yo", localIP);
+	var ips = util.getIPs();
+	
+	for (var i = 0; i < ips.length; i++) {
+		var ip = ips[i];
+		var broadcastIP = getBroadcastIP(ip);
+		script.log("Broadcast IP: " + broadcastIP);
+
+		local.sendTo(broadcastIP, remotePort, "/yo", ip);
+	}
 }
 
 function ping() {
-	local.send("/ping");
+	sendMsg("", "/ping");
 }
+
+function logProps() {
+	script.log("Logging Props");
+
+	for (var i = 0; i < props.length; i++) {
+		var cur = props[i];
+		script.log("Prop " + i + ": " + cur.ip + ", " + cur.mac + ", " + cur.name);
+	}
+}
+
+
 
 
 ///////////////////////
@@ -267,18 +265,12 @@ function collapseContainers() {
 	local.scripts.bento_osc.setCollapsed(true);
 }
 
-function initLocalIPEnum () {
-	var ips = util.getIPs();
-	localIP = localIPParameter.get();
+function getIndexFromContainer(param) {
+	parentName = param.getParent().name;
+	var p = parentName.split("_");
+	var index = p[0];
 	
-	localIPParameter.removeOptions();
-	
-	for (var i = 0; i < ips.length; i++) {
-		localIPParameter.addOption(ips[i], ips[i]);
-	}
-	
-	var selected = (localIP != "Local IP" && localIP != undefined) ? localIP : ips[1];
-	localIPParameter.set(selected);
+	return index;
 }
 
 function getBroadcastIP (ip) {
@@ -307,7 +299,10 @@ function propExists(mac) {
 
 function sendMsg(propIndex, oscAddress) {
 	if (propIndex == "") {
-		local.send(oscAddress);
+		for (var i = 0; i < props.length; i++) {
+			var ip = props[i].ip;
+			local.sendTo(ip, remotePort, oscAddress);
+		}
 	} else {
 		var ip = getPropIP(propIndex);
 		local.sendTo(ip, remotePort, oscAddress);	
@@ -316,7 +311,10 @@ function sendMsg(propIndex, oscAddress) {
 
 function sendMsgWithValue(propIndex, oscAddress, value) {
 	if (propIndex == "") {
-		local.send(oscAddress, value);
+		for (var i = 0; i < props.length; i++) {
+			var ip = props[i].ip;
+			local.sendTo(ip, remotePort, oscAddress, value);
+		}
 	} else {
 		var ip = getPropIP(propIndex);
 		local.sendTo(ip, remotePort, oscAddress, value);	
