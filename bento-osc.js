@@ -2,8 +2,10 @@ var valuesContainer = local.values;
 var propsContainer;
 var detectTrigger = local.parameters.addTrigger("Detect Props", "Detect props");
 var clearTrigger = local.parameters.addTrigger("Clear Props", "Clear props");
-var lastUpdateTime = 0;
-var updateRate = 1;
+var lastUpdateTimePing = 0;
+var updateRatePing = 1;
+var lastUpdateTimeClear = 0;
+var updateRateClear = 0.3;
 var remotePort = 9000;
 var props = [];
 
@@ -19,9 +21,14 @@ function init() {
 function update() {
 	var time = util.getTime();
 	
-	if(time > lastUpdateTime+updateRate) {
-		lastUpdateTime = time;
+	if(time > lastUpdateTimePing + updateRatePing) {
+		lastUpdateTimePing = time;
 		ping();
+	}
+
+	if(time > lastUpdateTimeClear+updateRateClear) {
+		lastUpdateTimeClear = time;
+		clearShortPressButtons();
 	}
 }
 
@@ -32,7 +39,7 @@ function moduleParameterChanged(param) {
 		detectProps();
 	} else if (param.is(clearTrigger)) {
 		clearProps();
-	}
+	} 
 }
 
 function moduleValueChanged(param) {
@@ -42,6 +49,10 @@ function moduleValueChanged(param) {
 	} else if (param.name == "sleep") {
 		var index = getIndexFromContainer(param);
 		sleep(index);
+	} else if (param.name == "enableIMU") {
+		var index = getIndexFromContainer(param);
+		var enable = param.get();
+		imuEnable(enable, index);
 	}
 }
 
@@ -62,7 +73,6 @@ function oscEvent(address, args) {
 			createPropContainer(prop);
 		}
 		
-		
 	} else if (address == "/imu/orientation") {
 		var mac = args[0];
 		var x = args[1];
@@ -80,6 +90,12 @@ function oscEvent(address, args) {
 		
 		prop = getPropFromMac(mac);
 		if (prop.batteryParameter != undefined) prop.batteryParameter.set(level);
+		
+	} else if (address == "/buttons/shortPress") {
+		var mac = args[0];
+		prop = getPropFromMac(mac);
+		prop.buttonShortPress.set(true);
+		script.log("button press");
 	}
 }
 
@@ -102,8 +118,15 @@ function createPropContainer(prop) {
 	container.addTrigger("Restart", "Restart");
 	container.addTrigger("Sleep", "Sleep");
 	
+	var batteryParameter = container.addFloatParameter("Battery Level", "Battery Level", 0, 0, 1);
+	batteryParameter.setAttribute("readonly", true);
+	prop.batteryParameter = batteryParameter;
+
 	var imuC = container.addContainer("IMU", "IMU");
 	
+	var enableImu = imuC.addBoolParameter("Enable IMU", "Enable IMU", false);
+	prop.enableImuParameter = enableImu;
+
 	var x = imuC.addFloatParameter("X", "X orientation", 0, -180, 180);
 	prop.xParameter = x;
 	x.setAttribute("readonly",true);
@@ -115,10 +138,11 @@ function createPropContainer(prop) {
 	var z = imuC.addFloatParameter("Z", "Z orientation", 0, -180, 180);
 	prop.zParameter = z;
 	z.setAttribute("readonly",true);
-	
-	var batteryParamter = container.addFloatParameter("Battery Level", "Battery Level", 0, 0, 1);
-	batteryParamter.setAttribute("readonly", true);
-	prop.batteryParameter = batteryParamter;
+
+	var buttonC = container.addContainer("Button", "Button");
+	var shortPress = buttonC.addBoolParameter("Short Press", "Short Press", false);
+	prop.buttonShortPress = shortPress;
+	shortPress.setAttribute("readonly",true);
 }
 
 
@@ -210,6 +234,16 @@ function playerDelete(name, propIndex) {
 
 function imuEnable(enable, propIndex)  {
 	sendMsgWithValue(propIndex, "/imu/enabled", enable);
+
+	if (propIndex != "") {
+		var prop = props[parseInt(propIndex)];
+		prop.enableImuParameter.set(enable);
+	} else {
+		for (var i = 0; i < props.length; i++) {
+			var prop = props[i];
+			prop.enableImuParameter.set(enable);
+		}
+	}	
 }
 
 function imuUpdateRate(fps, propIndex) {
@@ -295,6 +329,13 @@ function getPropFromMac (mac) {
 
 function propExists(mac) {
 	return (getPropFromMac(mac) ==  null) ? false : true;
+}
+
+function clearShortPressButtons() {
+	for (var i = 0; i < props.length; i++) {
+		var cur = props[i];
+		cur.buttonShortPress.set(false);
+	}
 }
 
 function sendMsg(propIndex, oscAddress) {
