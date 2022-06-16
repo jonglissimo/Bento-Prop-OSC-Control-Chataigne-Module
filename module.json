@@ -16,7 +16,9 @@
 		"autoFeedback",
 		"pass_through",
 		"input",
-		"outputs"
+		"outputs",
+		"useHierarchy",
+		"colorSendMode"
 	],
 	
 	"defaults": {
