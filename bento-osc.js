@@ -1,4 +1,4 @@
-var valuesContainer = local.values;
+var valuesContainer = local.parameters;
 var propsContainer;
 var detectTrigger = local.parameters.addTrigger("Detect Props", "Detect props");
 var clearTrigger = local.parameters.addTrigger("Clear Props", "Clear props");
@@ -42,11 +42,7 @@ function moduleParameterChanged(param) {
 		clearProps();
 	} else if (param.is(networkToggle)) {
 		updateReadOnlyNetwork();
-	}
-}
-
-function moduleValueChanged(param) {
-	if (param.name == "restart") { 
+	} else if (param.name == "restart") { 
 		var index = getIndexFromContainer(param);
 		restart(index);
 	} else if (param.name == "sleep") {
@@ -56,7 +52,16 @@ function moduleValueChanged(param) {
 		var index = getIndexFromContainer(param);
 		var enable = param.get();
 		imuEnable(enable, index);
+	} else if (param.name == "ipAddress") {
+		var index = getIndexFromContainer(param);
+
+		if (props[index]) {
+			props[index].ip = param.get();
+		}
 	}
+}
+
+function moduleValueChanged(param) {
 }
 
 function oscEvent(address, args) {
@@ -108,25 +113,34 @@ function detectProps() {
 
 function clearProps() {
 	props = [];
+	clearPropsContainer();
+}
+
+function clearPropsContainer() {
 	valuesContainer.removeContainer("Props");
 	propsContainer = valuesContainer.addContainer("Props", "List of props");
 }
 
 function createPropContainer(prop) {
 	var index = props.length - 1;
-	var container = propsContainer.addContainer(index + " - " + prop.ip, prop.ip);
-	container.setCollapsed(true);
+	var container = propsContainer.addContainer(index, prop.ip);
+	container.setCollapsed(false);
 
 	prop.container = container;
-	container.addTrigger("Restart", "Restart");
-	container.addTrigger("Sleep", "Sleep");
-	
 	var batteryParameter = container.addFloatParameter("Battery Level", "Battery Level", 0, 0, 1);
 	batteryParameter.setAttribute("readonly", true);
 	prop.batteryParameter = batteryParameter;
-
-	var imuC = container.addContainer("IMU", "IMU");
 	
+	var controlsC = container.addContainer("Controls", "Controls");
+	controlsC.setCollapsed(true);
+	controlsC.addTrigger("Restart", "Restart");
+	controlsC.addTrigger("Sleep", "Sleep");
+	controlsC.addStringParameter("IP Address", "IP Address", prop.ip);
+	
+	var sensorsC = container.addContainer("Sensors", "Sensors");
+	sensorsC.setCollapsed(true);
+	var imuC = sensorsC.addContainer("IMU", "IMU");
+	imuC.setCollapsed(true);
 	var enableImu = imuC.addBoolParameter("Enable IMU", "Enable IMU", false);
 	prop.enableImuParameter = enableImu;
 
@@ -142,7 +156,8 @@ function createPropContainer(prop) {
 	prop.zParameter = z;
 	z.setAttribute("readonly",true);
 
-	var buttonC = container.addContainer("Button", "Button");
+	var buttonC = sensorsC.addContainer("Button", "Button");
+	buttonC.setCollapsed(true);
 	var shortPress = buttonC.addBoolParameter("Short Press", "Short Press", false);
 	prop.buttonShortPress = shortPress;
 	shortPress.setAttribute("readonly",true);
@@ -315,11 +330,8 @@ function collapseContainers() {
 }
 
 function getIndexFromContainer(param) {
-	parentName = param.getParent().name;
-	var p = parentName.split("_");
-	var index = p[0];
-	
-	return index;
+	parentName = param.getParent().getParent().name;
+	return parseInt(index);
 }
 
 function getBroadcastIP (ip) {
@@ -376,3 +388,9 @@ function sendMsgWithValue(propIndex, oscAddress, value) {
 		local.sendTo(ip, remotePort, oscAddress, value);	
 	}
 }
+
+var swapArrayElements = function(arr, indexA, indexB) {
+	var temp = arr[indexA];
+	arr[indexA] = arr[indexB];
+	arr[indexB] = temp;
+};
