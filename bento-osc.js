@@ -58,6 +58,9 @@ function moduleParameterChanged(param) {
 		if (props[index]) {
 			props[index].ip = param.get();
 		}
+	} else if (param.name == "findProp") {
+		var index = getIndexFromContainer(param);
+		findProp(index);
 	}
 }
 
@@ -133,6 +136,7 @@ function createPropContainer(prop) {
 	
 	var controlsC = container.addContainer("Controls", "Controls");
 	controlsC.setCollapsed(true);
+	controlsC.addTrigger("Find Prop", "Find Prop");
 	controlsC.addTrigger("Restart", "Restart");
 	controlsC.addTrigger("Sleep", "Sleep");
 	controlsC.addStringParameter("IP Address", "IP Address", prop.ip);
@@ -171,11 +175,6 @@ function createPropContainer(prop) {
 
 function setColor(color, propIndex) {
 	var oscAddress = "/rgb/fill";
-	// var propIndexType = typeof propIndex;
-	// var propIndexInt = parseInt(propIndex);
-	// var propIndexLength = propIndex.length;
-
-	// script.log("prop Index: " + propIndex + ", type: " + propIndexType + ", Int value: " + propIndexInt + ", length: " + propIndexLength);
 
 	if (propIndex == "") {
 		for (var i = 0; i < props.length; i++) {
@@ -184,8 +183,18 @@ function setColor(color, propIndex) {
 		}
 	} else {
 		var ip = getPropIP(propIndex);
-		local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);	
+		if (ip) {
+			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);	
+		}
 	}
+}
+
+function findProp(propIndex) {
+	if (propIndex != "") {
+		setColor([1,1,1], propIndex);
+		util.delayThreadMS(200);
+		setColor([0,0,0], propIndex);
+	} 
 }
 
 function setPoint(color, position, size, propIndex) {
