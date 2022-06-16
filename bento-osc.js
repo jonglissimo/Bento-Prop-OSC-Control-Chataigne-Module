@@ -49,16 +49,10 @@ function moduleParameterChanged(param) {
 		var index = getIndexFromContainer(param);
 		sleep(index);
 	} else if (param.name == "enableIMU") {
-		var index = getIndexFromContainer(param);
+		var index = parseInt(param.getParent().getParent().getParent().name);
 		var enable = param.get();
 		imuEnable(enable, index);
-	} else if (param.name == "ipAddress") {
-		var index = getIndexFromContainer(param);
-
-		if (props[index]) {
-			props[index].ip = param.get();
-		}
-	} else if (param.name == "findProp") {
+	}  else if (param.name == "findProp") {
 		var index = getIndexFromContainer(param);
 		findProp(index);
 	}
@@ -72,7 +66,7 @@ function oscEvent(address, args) {
 	if (address == "/wassup") {
 		script.log("OSC Message received "+address+", "+args.length+" arguments");
 		var prop = {
-			"ip": args[0],
+			"initialIp": args[0],
 			"mac": args[1],
 			"name": args[2]
 		};
@@ -126,7 +120,7 @@ function clearPropsContainer() {
 
 function createPropContainer(prop) {
 	var index = props.length - 1;
-	var container = propsContainer.addContainer(index, prop.ip);
+	var container = propsContainer.addContainer(index, prop.initialIp);
 	container.setCollapsed(false);
 
 	prop.container = container;
@@ -136,10 +130,11 @@ function createPropContainer(prop) {
 	
 	var controlsC = container.addContainer("Controls", "Controls");
 	controlsC.setCollapsed(true);
+	var ipParameter = controlsC.addStringParameter("IP Address", "IP Address", prop.initialIp);
+	prop.ip = ipParameter;
 	controlsC.addTrigger("Find Prop", "Find Prop");
 	controlsC.addTrigger("Restart", "Restart");
 	controlsC.addTrigger("Sleep", "Sleep");
-	controlsC.addStringParameter("IP Address", "IP Address", prop.ip);
 	
 	var sensorsC = container.addContainer("Sensors", "Sensors");
 	sensorsC.setCollapsed(true);
@@ -178,7 +173,7 @@ function setColor(color, propIndex) {
 
 	if (propIndex == "") {
 		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip;
+			var ip = props[i].ip.get();
 			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
 		}
 	} else {
@@ -202,7 +197,7 @@ function setPoint(color, position, size, propIndex) {
 	
 	if (propIndex == "") {
 		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip;
+			var ip = props[i].ip.get();
 			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
 		}
 	} else {
@@ -260,6 +255,8 @@ function playerDelete(name, propIndex) {
 }
 
 function imuEnable(enable, propIndex)  {
+	script.log("IMU enable: " + propIndex);
+
 	sendMsgWithValue(propIndex, "/imu/enabled", enable);
 
 	if (propIndex != "") {
@@ -304,7 +301,7 @@ function logProps() {
 
 	for (var i = 0; i < props.length; i++) {
 		var cur = props[i];
-		script.log("Prop " + i + ": " + cur.ip + ", " + cur.mac + ", " + cur.name);
+		script.log("Prop " + i + ": " + cur.ip.get() + ", " + cur.mac + ", " + cur.name);
 	}
 }
 
@@ -340,7 +337,7 @@ function collapseContainers() {
 
 function getIndexFromContainer(param) {
 	parentName = param.getParent().getParent().name;
-	return parseInt(index);
+	return parseInt(parentName);
 }
 
 function getBroadcastIP (ip) {
@@ -350,7 +347,7 @@ function getBroadcastIP (ip) {
 
 function getPropIP(index) {
 	index = parseInt(index);
-	return props[index].ip;
+	return props[index].ip.get();
 }
 
 function getPropFromMac (mac) {
@@ -377,7 +374,7 @@ function clearShortPressButtons() {
 function sendMsg(propIndex, oscAddress) {
 	if (propIndex == "") {
 		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip;
+			var ip = props[i].ip.get();
 			local.sendTo(ip, remotePort, oscAddress);
 		}
 	} else {
@@ -389,7 +386,7 @@ function sendMsg(propIndex, oscAddress) {
 function sendMsgWithValue(propIndex, oscAddress, value) {
 	if (propIndex == "") {
 		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip;
+			var ip = props[i].ip.get();
 			local.sendTo(ip, remotePort, oscAddress, value);
 		}
 	} else {
