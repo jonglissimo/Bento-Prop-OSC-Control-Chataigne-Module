@@ -2,6 +2,7 @@ var valuesContainer = local.values;
 var propsContainer;
 var detectTrigger = local.parameters.addTrigger("Detect Props", "Detect props");
 var clearTrigger = local.parameters.addTrigger("Clear Props", "Clear props");
+var networkToggle = local.parameters.setup.detectOnAllNetworks;
 var lastUpdateTimePing = 0;
 var updateRatePing = 1;
 var lastUpdateTimeClear = 0;
@@ -39,7 +40,9 @@ function moduleParameterChanged(param) {
 		detectProps();
 	} else if (param.is(clearTrigger)) {
 		clearProps();
-	} 
+	} else if (param.is(networkToggle)) {
+		updateReadOnlyNetwork();
+	}
 }
 
 function moduleValueChanged(param) {
@@ -251,7 +254,13 @@ function imuUpdateRate(fps, propIndex) {
 }
 
 function yo() {
-	var ips = util.getIPs();
+	var ips;
+
+	if (networkToggle.get()) {
+		ips = util.getIPs();
+	} else {
+		ips = [local.parameters.setup.detectOnThisNetworkOnly.get()];
+	}
 	
 	for (var i = 0; i < ips.length; i++) {
 		var ip = ips[i];
@@ -291,6 +300,12 @@ function setReadonly() {
 		oscOutput.remoteHost.setAttribute("readonly", true);
 		oscOutput.remotePort.setAttribute("readonly", true);
 	}
+
+	updateReadOnlyNetwork();
+}
+
+function updateReadOnlyNetwork() {
+	local.parameters.setup.detectOnThisNetworkOnly.setAttribute("readonly", networkToggle.get());
 }
 
 function collapseContainers() {

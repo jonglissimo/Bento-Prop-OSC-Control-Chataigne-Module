@@ -36,6 +36,13 @@
 	},
 	
 	"parameters": {
+		"Setup":{
+			"type": "Container",
+			"collapsed": false,
+			
+			"Detect on all networks": { "type": "Boolean", "description": "Detect on all networks" , "default": true },
+			"Detect on this network only": { "type":"String", "description": "Enter a broadcast IP address to send /yo message to.", "default": "192.168.1.255" }
+		}
 	},
 	
 	"scripts": [
