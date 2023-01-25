@@ -18,7 +18,8 @@
 		"input",
 		"outputs",
 		"useHierarchy",
-		"colorSendMode"
+		"colorSendMode",
+		"booleanSendMode"
 	],
 	
 	"defaults": {
