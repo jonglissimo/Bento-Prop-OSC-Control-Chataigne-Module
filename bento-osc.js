@@ -230,6 +230,11 @@ function playerPlay(time, propIndex) {
 	sendMsgWithValue(propIndex, "/player/play", time);
 }
 
+function playerPlayAndIr(time, irBrightness, propIndex) {
+	sendMsgWithValue(propIndex, "/player/play", time);
+	setIRBrightness(irBrightness, propIndex);
+}
+
 function playerPause(propIndex) {
 	sendMsg(propIndex, "/player/pause");
 }

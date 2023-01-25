@@ -157,6 +157,26 @@
 			}
 		},
 
+		"Player Play And IR": {
+			"menu": "",
+			"callback": "playerPlayAndIr",
+			"parameters": {
+				"Time": {
+					"type": "Float",
+					"default": 0.0
+				},
+				"IR Brightness": {
+					"type": "Float",
+					"default": 1.0,
+					"min": 0.0,
+					"max": 1.0
+				},
+				"Prop Index": {
+					"type": "String"
+				}
+			}
+		},
+
 		"Player Pause": {
 			"menu": "",
 			"callback": "playerPause",
