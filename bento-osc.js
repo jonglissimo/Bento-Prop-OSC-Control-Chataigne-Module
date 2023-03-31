@@ -55,6 +55,9 @@ function moduleParameterChanged(param) {
 	}  else if (param.name == "findProp") {
 		var index = getIndexFromContainer(param);
 		findProp(index);
+	} else if (param.name == "calibrate") {
+		var index = getIndexFromContainer(param);
+		imuCalibrate(index);
 	}
 }
 
@@ -154,6 +157,8 @@ function createPropContainer(prop) {
 	var z = imuC.addFloatParameter("Z", "Z orientation", 0, -180, 180);
 	prop.zParameter = z;
 	z.setAttribute("readonly",true);
+
+	imuC.addTrigger("Calibrate", "Calibrate yaw");
 
 	var buttonC = sensorsC.addContainer("Button", "Button");
 	buttonC.setCollapsed(true);
