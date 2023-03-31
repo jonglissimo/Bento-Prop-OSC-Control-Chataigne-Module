@@ -263,6 +263,7 @@ function imuEnable(enable, propIndex)  {
 	script.log("IMU enable: " + propIndex);
 
 	sendMsgWithValue(propIndex, "/imu/enabled", enable);
+	sendMsgWithValue(propIndex, "/imu/sendLevel", 1);
 
 	if (propIndex != "") {
 		var prop = props[parseInt(propIndex)];
@@ -277,6 +278,10 @@ function imuEnable(enable, propIndex)  {
 
 function imuUpdateRate(fps, propIndex) {
 	sendMsgWithValue(propIndex, "/imu/updateRate", fps);
+}
+
+function imuCalibrate(propIndex) {
+	sendMsgWithValue(propIndex, "/imu/calibrate", 1);
 }
 
 function yo() {
