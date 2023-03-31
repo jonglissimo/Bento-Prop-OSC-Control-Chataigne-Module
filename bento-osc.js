@@ -71,7 +71,7 @@ function oscEvent(address, args) {
 		var prop = {
 			"initialIp": args[0],
 			"mac": args[1],
-			"name": args[2]
+			"type": args[2]
 		};
 		
 		var exists = propExists(prop.mac);
@@ -135,6 +135,9 @@ function createPropContainer(prop) {
 	controlsC.setCollapsed(true);
 	var ipParameter = controlsC.addStringParameter("IP Address", "IP Address", prop.initialIp);
 	prop.ip = ipParameter;
+	var typeParameter = controlsC.addStringParameter("Device Type", "Device Type", prop.type);
+	typeParameter.setAttribute("readonly", true);
+
 	controlsC.addTrigger("Find Prop", "Find Prop");
 	controlsC.addTrigger("Restart", "Restart");
 	controlsC.addTrigger("Sleep", "Sleep");
@@ -173,102 +176,124 @@ function createPropContainer(prop) {
 // Command
 //////////////////
 
-function setColor(color, propIndex) {
+function setColor(color, propIndex, propType) {
 	var oscAddress = "/rgb/fill";
 
-	if (propIndex == "") {
-		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip.get();
-			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
-		}
-	} else {
+	if (propIndex != undefined && propIndex != "") {
 		var ip = getPropIP(propIndex);
 		if (ip) {
 			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);	
 		}
+	} else if (propType != undefined && propType != "") {
+		for (var i = 0; i < props.length; i++) {
+			var p = props[i];
+			var type = p.type;
+
+			if (type == propType) {
+				var ip = props[i].ip.get();
+				local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
+			}
+		}
+	} else {
+		for (var i = 0; i < props.length; i++) {
+			var ip = props[i].ip.get();
+			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
+		}
 	}
 }
 
-function findProp(propIndex) {
+function findProp(propIndex, propType) {
 	if (propIndex != "") {
-		setColor([1,1,1], propIndex);
+		setColor([1,1,1], propIndex, propType);
 		util.delayThreadMS(200);
-		setColor([0,0,0], propIndex);
+		setColor([0,0,0], propIndex, propType);
 	} 
 }
 
-function setPoint(color, position, size, propIndex) {
+function setPoint(color, position, size, propIndex, propType) {
 	var oscAddress = "/rgb/point";
 	
-	if (propIndex == "") {
+	if (propIndex != undefined && propIndex != "") {
+		var ip = getPropIP(propIndex);
+		if (ip) {
+			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);	
+		}
+	} else if (propType != undefined && propType != "") {
+		for (var i = 0; i < props.length; i++) {
+			var p = props[i];
+			var type = p.type;
+
+			if (type == propType) {
+				var ip = props[i].ip.get();
+				local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
+			}
+		}
+	} else {
 		for (var i = 0; i < props.length; i++) {
 			var ip = props[i].ip.get();
 			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
 		}
-	} else {
-		var ip = getPropIP(propIndex);
-		local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
 	}
 }
 
-function restart(propIndex) {
-	sendMsg(propIndex, "/root/restart");
+function restart(propIndex, propType) {
+	sendMsg("/root/restart", propIndex, propType);
 }
 
-function sleep(propIndex) {
-	sendMsg(propIndex, "/root/sleep");
+function sleep(propIndex, propType) {
+	sendMsg("/root/sleep", propIndex, propType);
 }
 
-function setRGBBrightness(brightness, propIndex) {
-	sendMsgWithValue(propIndex, "/rgb/brightness", brightness);
+function setRGBBrightness(brightness, propIndex, propType) {
+	sendMsgWithValue("/rgb/brightness", brightness, propIndex, propType);
 }
 
-function setIRBrightness(brightness, propIndex) {
-	sendMsgWithValue(propIndex, "/ir/brightness", brightness);
+function setIRBrightness(brightness, propIndex, propType) {
+	sendMsgWithValue("/ir/brightness", brightness, propIndex, propType);
 }
 
-function playerLoad(name, propIndex) {
-	sendMsgWithValue(propIndex, "/player/load", name);
+function playerLoad(name, propIndex, propType) {
+	sendMsgWithValue("/player/load", name, propIndex, propType);
 }
 
-function playerPlay(time, propIndex) {
-	sendMsgWithValue(propIndex, "/player/play", time);
+function playerPlay(time, propIndex, propType) {
+	sendMsgWithValue("/player/play", time, propIndex, propType);
 }
 
-function playerPlayAndIr(time, irBrightness, propIndex) {
-	sendMsgWithValue(propIndex, "/player/play", time);
-	setIRBrightness(irBrightness, propIndex);
+function playerPlayAndIr(time, irBrightness, propIndex, propType) {
+	sendMsgWithValue("/player/play", time, propIndex, propType);
+	setIRBrightness(irBrightness, propIndex, propType);
 }
 
-function playerPause(propIndex) {
-	sendMsg(propIndex, "/player/pause");
+function playerPause(propIndex, propType) {
+	sendMsg("/player/pause", propIndex, propType);
 }
 
-function playerResume(propIndex) {
-	sendMsg(propIndex, "/player/resume");
+function playerResume(propIndex, propType) {
+	sendMsg("/player/resume", propIndex, propType);
 }
 
-function playerStop(propIndex) {
-	sendMsg(propIndex, "/player/stop");
+function playerStop(propIndex, propType) {
+	sendMsg("/player/stop", propIndex, propType);
 }
 
-function playerSeek(time, propIndex) {
-	sendMsgWithValue(propIndex, "/player/seek", time);
+function playerSeek(time, propIndex, propType) {
+	sendMsgWithValue("/player/seek", time, propIndex, propType);
 }
 
-function playerId(enable, propIndex) {
-	sendMsgWithValue(propIndex, "/player/id", enable);
+function playerId(enable, propIndex, propType) {
+	sendMsgWithValue("/player/id", enable, propIndex, propType);
 }
 
-function playerDelete(name, propIndex) {
-	sendMsgWithValue(propIndex, "/player/delete", name);
+function playerDelete(name, propIndex, propType) {
+	sendMsgWithValue("/player/delete", name, propIndex, propType);
 }
 
-function imuEnable(enable, propIndex)  {
+function imuEnable(enable, propIndex, propType)  {
 	script.log("IMU enable: " + propIndex);
 
-	sendMsgWithValue(propIndex, "/imu/enabled", enable);
-	sendMsgWithValue(propIndex, "/imu/sendLevel", 1);
+	sendMsgWithValue("/imu/enabled", enable, propIndex, propType);
+	sendMsgWithValue("/imu/sendLevel", 1, propIndex, propType);
 
 	if (propIndex != "") {
 		var prop = props[parseInt(propIndex)];
@@ -281,12 +306,12 @@ function imuEnable(enable, propIndex)  {
 	}	
 }
 
-function imuUpdateRate(fps, propIndex) {
-	sendMsgWithValue(propIndex, "/imu/updateRate", fps);
+function imuUpdateRate(fps, propIndex, propType) {
+	sendMsgWithValue("/imu/updateRate", fps, propIndex, propType);
 }
 
-function imuCalibrate(propIndex) {
-	sendMsgWithValue(propIndex, "/imu/calibrate", 1);
+function imuCalibrate(propIndex, propType) {
+	sendMsgWithValue("/imu/calibrate", 1, propIndex, propType);
 }
 
 function yo() {
@@ -386,28 +411,52 @@ function clearShortPressButtons() {
 	}
 }
 
-function sendMsg(propIndex, oscAddress) {
-	if (propIndex == "") {
+function sendMsg(oscAddress, propIndex, propType) {
+	if (propIndex != undefined && propIndex != "") {
+		var ip = getPropIP(propIndex);
+		if (ip) {
+			local.sendTo(ip, remotePort, oscAddress);	
+		}
+	} else if (propType != undefined && propType != "") {
+		for (var i = 0; i < props.length; i++) {
+			var p = props[i];
+			var type = p.type;
+
+			if (type == propType) {
+				var ip = props[i].ip.get();
+				local.sendTo(ip, remotePort, oscAddress);
+			}
+		}
+	} else {
 		for (var i = 0; i < props.length; i++) {
 			var ip = props[i].ip.get();
 			local.sendTo(ip, remotePort, oscAddress);
 		}
-	} else {
-		var ip = getPropIP(propIndex);
-		local.sendTo(ip, remotePort, oscAddress);	
-	}
+	}	
 }
 
-function sendMsgWithValue(propIndex, oscAddress, value) {
-	if (propIndex == "") {
+function sendMsgWithValue(oscAddress, value, propIndex, propType) {
+	if (propIndex != undefined && propIndex != "") {
+		var ip = getPropIP(propIndex);
+		if (ip) {
+			local.sendTo(ip, remotePort, oscAddress, value);	
+		}
+	} else if (propType != undefined && propType != "") {
+		for (var i = 0; i < props.length; i++) {
+			var p = props[i];
+			var type = p.type;
+
+			if (type == propType) {
+				var ip = props[i].ip.get();
+				local.sendTo(ip, remotePort, oscAddress, value);
+			}
+		}
+	} else {
 		for (var i = 0; i < props.length; i++) {
 			var ip = props[i].ip.get();
 			local.sendTo(ip, remotePort, oscAddress, value);
 		}
-	} else {
-		var ip = getPropIP(propIndex);
-		local.sendTo(ip, remotePort, oscAddress, value);	
-	}
+	}	
 }
 
 var swapArrayElements = function(arr, indexA, indexB) {
