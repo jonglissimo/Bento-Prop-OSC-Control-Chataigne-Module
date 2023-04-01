@@ -179,12 +179,12 @@ function createPropContainer(prop) {
 function setColor(color, propIndex, propType) {
 	var oscAddress = "/rgb/fill";
 
-	if (propIndex != undefined && propIndex != "") {
+	if (propIndex != "") {
 		var ip = getPropIP(propIndex);
 		if (ip) {
 			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);	
 		}
-	} else if (propType != undefined && propType != "") {
+	} else if (propType != "") {
 		for (var i = 0; i < props.length; i++) {
 			var p = props[i];
 			var type = p.type;
@@ -202,23 +202,23 @@ function setColor(color, propIndex, propType) {
 	}
 }
 
-function findProp(propIndex, propType) {
+function findProp(propIndex) {
 	if (propIndex != "") {
-		setColor([1,1,1], propIndex, propType);
+		setColor([1,1,1], propIndex);
 		util.delayThreadMS(200);
-		setColor([0,0,0], propIndex, propType);
+		setColor([0,0,0], propIndex);
 	} 
 }
 
 function setPoint(color, position, size, propIndex, propType) {
 	var oscAddress = "/rgb/point";
 	
-	if (propIndex != undefined && propIndex != "") {
+	if (propIndex != "") {
 		var ip = getPropIP(propIndex);
 		if (ip) {
 			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);	
 		}
-	} else if (propType != undefined && propType != "") {
+	} else if (propType != "") {
 		for (var i = 0; i < props.length; i++) {
 			var p = props[i];
 			var type = p.type;
@@ -250,6 +250,32 @@ function setRGBBrightness(brightness, propIndex, propType) {
 
 function setIRBrightness(brightness, propIndex, propType) {
 	sendMsgWithValue("/ir/brightness", brightness, propIndex, propType);
+}
+
+function setRGBTemperature(r, g, b, propIndex, propType) {
+	var oscAddress = "/rgb/temperature";
+
+	if (propIndex != "") {
+		var ip = getPropIP(propIndex);
+		if (ip) {
+			local.sendTo(ip, remotePort, oscAddress, r, g, b);	
+		}
+	} else if (propType != "") {
+		for (var i = 0; i < props.length; i++) {
+			var p = props[i];
+			var type = p.type;
+
+			if (type == propType) {
+				var ip = props[i].ip.get();
+				local.sendTo(ip, remotePort, oscAddress, r, g, b);	
+			}
+		}
+	} else {
+		for (var i = 0; i < props.length; i++) {
+			var ip = props[i].ip.get();
+			local.sendTo(ip, remotePort, oscAddress, r, g, b);	
+		}
+	}
 }
 
 function playerLoad(name, propIndex, propType) {
@@ -314,6 +340,10 @@ function imuCalibrate(propIndex, propType) {
 	sendMsgWithValue("/imu/calibrate", 1, propIndex, propType);
 }
 
+function genericCommand(oscAddress, value, propIndex, propType) {
+	sendMsgWithValue(oscAddress, value, propIndex, propType);
+}
+
 function yo() {
 	var ips;
 
@@ -333,7 +363,7 @@ function yo() {
 }
 
 function ping() {
-	sendMsg("", "/ping");
+	sendMsg("/ping", "", "");
 }
 
 function logProps() {
@@ -412,12 +442,12 @@ function clearShortPressButtons() {
 }
 
 function sendMsg(oscAddress, propIndex, propType) {
-	if (propIndex != undefined && propIndex != "") {
+	if (propIndex != "") {
 		var ip = getPropIP(propIndex);
 		if (ip) {
 			local.sendTo(ip, remotePort, oscAddress);	
 		}
-	} else if (propType != undefined && propType != "") {
+	} else if (propType != "") {
 		for (var i = 0; i < props.length; i++) {
 			var p = props[i];
 			var type = p.type;

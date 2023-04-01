@@ -3,7 +3,7 @@
 	"type": "OSC",
 	"path": "Hardware",
 	
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "Module to control Bento LED props (e.g. flowtoy creators clubs) through the OSC command API",
 	"url": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module",
 	"downloadURL": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module/archive/master.zip",
@@ -132,6 +132,37 @@
 					"min": 0,
 					"max": 1,
 					"useForMapping": true
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				}
+			}
+		}, 
+
+		"RGB Temperature": {
+			"menu": "",
+			"callback": "setRGBTemperature",
+			"parameters": {
+				"R": {
+					"type": "Float",
+					"default": 1.0,
+					"min": 0,
+					"max": 1
+				},
+				"G": {
+					"type": "Float",
+					"default": 1.0,
+					"min": 0,
+					"max": 1
+				},
+				"B": {
+					"type": "Float",
+					"default": 1.0,
+					"min": 0,
+					"max": 1
 				},
 				"Prop Index": {
 					"type": "String"
@@ -365,6 +396,25 @@
 		"Log Props": {
 			"menu": "",
 			"callback": "logProps"
-		}
+		},
+
+		"Generic OSC Command": {
+			"menu": "",
+			"callback": "genericCommand",
+			"parameters": {
+				"OSC Address": {
+					"type": "String"
+				},
+				"Value": {
+					"type": "Float"
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				}
+			}
+		},
 	}
 }
