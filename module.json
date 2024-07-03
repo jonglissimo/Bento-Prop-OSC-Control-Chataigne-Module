@@ -68,6 +68,9 @@
 				}, 
 				"Prop Type": {
 					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
 				}
 			}
 		},
@@ -185,6 +188,9 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				},
+				"Network": {
+					"type": "String"
 				}
 			}
 		},
@@ -201,6 +207,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				},
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -300,6 +309,9 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				},
+				"Network": {
+					"type": "String"
 				}
 			}
 		},
@@ -359,7 +371,14 @@
 		"Imu Calibrate": {
 			"menu": "",
 			"callback": "imuCalibrate",
-			"parameters": {}
+			"parameters": {
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				}
+			}
 		},
 
 		"Restart": {

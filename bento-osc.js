@@ -176,7 +176,7 @@ function createPropContainer(prop) {
 // Command
 //////////////////
 
-function setColor(color, propIndex, propType) {
+function setColor(color, propIndex, propType, network) {
 	var oscAddress = "/rgb/fill";
 
 	if (propIndex != "") {
@@ -190,6 +190,18 @@ function setColor(color, propIndex, propType) {
 			var type = p.type;
 
 			if (type == propType) {
+				var ip = props[i].ip.get();
+				local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
+			}
+		}
+	} else if (network != undefined && network != "") {
+		for (var i = 0; i < props.length; i++) {
+			var p = props[i];
+			var ip = p.ip.get();
+			var ipP = ip.split(".");
+			var networkP = network.split(".");
+
+			if (ipP[0] == networkP[0] && ipP[1] == networkP[1] && ipP[2] == networkP[2]) {
 				var ip = props[i].ip.get();
 				local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
 			}
@@ -278,12 +290,12 @@ function setRGBTemperature(r, g, b, propIndex, propType) {
 	}
 }
 
-function playerLoad(name, propIndex, propType) {
-	sendMsgWithValue("/player/load", name, propIndex, propType);
+function playerLoad(name, propIndex, propType, network) {
+	sendMsgWithValue("/player/load", name, propIndex, propType, network);
 }
 
-function playerPlay(time, propIndex, propType) {
-	sendMsgWithValue("/player/play", time, propIndex, propType);
+function playerPlay(time, propIndex, propType, network) {
+	sendMsgWithValue("/player/play", time, propIndex, propType, network);
 }
 
 function playerPlayAndIr(time, irBrightness, propIndex, propType) {
@@ -307,8 +319,8 @@ function playerSeek(time, propIndex, propType) {
 	sendMsgWithValue("/player/seek", time, propIndex, propType);
 }
 
-function playerId(enable, propIndex, propType) {
-	sendMsgWithValue("/player/id", enable, propIndex, propType);
+function playerId(enable, propIndex, propType, network) {
+	sendMsgWithValue("/player/id", enable, propIndex, propType, network);
 }
 
 function playerDelete(name, propIndex, propType) {
@@ -465,7 +477,7 @@ function sendMsg(oscAddress, propIndex, propType) {
 	}	
 }
 
-function sendMsgWithValue(oscAddress, value, propIndex, propType) {
+function sendMsgWithValue(oscAddress, value, propIndex, propType, network) {
 	if (propIndex != undefined && propIndex != "") {
 		var ip = getPropIP(propIndex);
 		if (ip) {
@@ -477,6 +489,18 @@ function sendMsgWithValue(oscAddress, value, propIndex, propType) {
 			var type = p.type;
 
 			if (type == propType) {
+				var ip = props[i].ip.get();
+				local.sendTo(ip, remotePort, oscAddress, value);
+			}
+		}
+	} else if (network != undefined && network != "") {
+		for (var i = 0; i < props.length; i++) {
+			var p = props[i];
+			var ip = p.ip.get();
+			var ipP = ip.split(".");
+			var networkP = network.split(".");
+
+			if (ipP[0] == networkP[0] && ipP[1] == networkP[1] && ipP[2] == networkP[2]) {
 				var ip = props[i].ip.get();
 				local.sendTo(ip, remotePort, oscAddress, value);
 			}
