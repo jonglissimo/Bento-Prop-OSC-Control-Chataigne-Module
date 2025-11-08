@@ -102,6 +102,7 @@ function oscEvent(address, args) {
 	} else if (address == "/buttons/shortPress") {
 		var mac = args[0];
 		prop = getPropFromMac(mac);
+
 		prop.buttonShortPress.set(true);
 		script.log("button press");
 	}
@@ -328,8 +329,6 @@ function playerDelete(name, propIndex, propType) {
 }
 
 function imuEnable(enable, propIndex, propType)  {
-	script.log("IMU enable: " + propIndex);
-
 	sendMsgWithValue("/imu/enabled", enable, propIndex, propType);
 	sendMsgWithValue("/imu/sendLevel", 1, propIndex, propType);
 
@@ -368,7 +367,7 @@ function yo() {
 	for (var i = 0; i < ips.length; i++) {
 		var ip = ips[i];
 		var broadcastIP = getBroadcastIP(ip);
-		script.log("Broadcast IP: " + broadcastIP);
+		// script.log("Broadcast IP: " + broadcastIP);
 
 		local.sendTo(broadcastIP, remotePort, "/yo", ip);
 	}

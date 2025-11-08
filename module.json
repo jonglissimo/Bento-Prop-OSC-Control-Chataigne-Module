@@ -15,11 +15,14 @@
 		"autoRange",
 		"autoFeedback",
 		"pass_through",
-		"input",
-		"outputs",
+		"oscInput",
+		"oscOutputs",
 		"useHierarchy",
 		"colorSendMode",
-		"booleanSendMode"
+		"booleanSendMode",
+		"clearValues",
+		"autoAdd",
+		"splitArguments"
 	],
 	
 	"defaults": {
