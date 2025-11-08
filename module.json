@@ -3,7 +3,7 @@
 	"type": "OSC",
 	"path": "Hardware",
 	
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"description": "Module to control Bento LED props (e.g. flowtoy creators clubs) through the OSC command API",
 	"url": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module",
 	"downloadURL": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module/archive/master.zip",
