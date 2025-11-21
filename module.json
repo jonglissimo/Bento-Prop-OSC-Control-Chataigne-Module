@@ -3,7 +3,7 @@
 	"type": "OSC",
 	"path": "Hardware",
 	
-	"version": "1.0.10",
+	"version": "2.0.0",
 	"description": "Module to control Bento LED props (e.g. flowtoy creators clubs) through the OSC command API",
 	"url": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module",
 	"downloadURL": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module/archive/master.zip",
@@ -22,11 +22,12 @@
 		"booleanSendMode",
 		"clearValues",
 		"autoAdd",
-		"splitArguments"
+		"splitArguments",
+		"networkInterface"
 	],
 	
 	"defaults": {
-		"autoAdd": true,
+		"autoAdd": false,
 		"oscInput": {
 			"localPort": 10000
 		},
@@ -95,7 +96,7 @@
 				}, 
 				"Size": {
 					"type": "Float",
-					"default": 0,
+					"default": 0.1,
 					"min": 0,
 					"max": 1
 				},
@@ -103,6 +104,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -124,6 +128,9 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
 				}
 			}
 		}, 
@@ -143,6 +150,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -175,9 +185,52 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
 				}
 			}
 		}, 
+
+		"Stream Layer Enable": {
+			"menu": "",
+			"callback": "streamLayerEnable",
+			"parameters": {
+				"Enable": {
+					"type": "Boolean",
+					"default": true
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				},
+				"Network": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Layer Enable": {
+			"menu": "",
+			"callback": "playerLayerEnable",
+			"parameters": {
+				"Enable": {
+					"type": "Boolean",
+					"default": true
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				},
+				"Network": {
+					"type": "String"
+				}
+			}
+		},
 
 		"Player Load": {
 			"menu": "",
@@ -185,6 +238,29 @@
 			"parameters": {
 				"Sequence name": {
 					"type": "String"
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				},
+				"Network": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Player Play Sync": {
+			"menu": "",
+			"callback": "playerPlaySync",
+			"parameters": {
+				"Sequence name": {
+					"type": "String"
+				},
+				"Time": {
+					"type": "Float",
+					"default": 0.0
 				},
 				"Prop Index": {
 					"type": "String"
@@ -218,29 +294,6 @@
 			}
 		},
 
-		"Player Play And IR": {
-			"menu": "",
-			"callback": "playerPlayAndIr",
-			"parameters": {
-				"Time": {
-					"type": "Float",
-					"default": 0.0
-				},
-				"IR Brightness": {
-					"type": "Float",
-					"default": 1.0,
-					"min": 0.0,
-					"max": 1.0
-				},
-				"Prop Index": {
-					"type": "String"
-				},
-				"Prop Type": {
-					"type": "String"
-				}
-			}
-		},
-
 		"Player Pause": {
 			"menu": "",
 			"callback": "playerPause",
@@ -249,6 +302,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -263,6 +319,9 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
 				}
 			}
 		},
@@ -275,6 +334,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -294,6 +356,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -321,7 +386,7 @@
 
 		"Player Delete": {
 			"menu": "",
-			"callback": "playerDelete",
+			"callback": "playerDeleteV1",
 			"parameters": {
 				"Name": {
 					"type": "String"
@@ -330,6 +395,32 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
+				}
+			}
+		},
+
+		"Files Delete": {
+			"menu": "",
+			"callback": "filesDelete",
+			"parameters": {
+				"Folder": {
+					"type": "Enum",
+					"options": {
+						"Playback Files": "/playback",
+						"Script Files": "/scripts"
+					}
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -347,6 +438,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -367,6 +461,9 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
 				}
 			}
 		},
@@ -379,6 +476,29 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
+				}
+			}
+		},
+		
+		"Battery Show": {
+			"menu": "",
+			"callback": "batteryShow",
+			"parameters": {
+				"Enable": {
+					"type": "Boolean",
+					"default": true
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				},
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -393,6 +513,9 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
 				}
 			}
 		},
@@ -405,6 +528,9 @@
 					"type": "String"
 				},
 				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
 					"type": "String"
 				}
 			}
@@ -435,8 +561,11 @@
 				},
 				"Prop Type": {
 					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
 				}
 			}
-		},
+		}
 	}
 }

@@ -65,15 +65,16 @@ function moduleValueChanged(param) {
 }
 
 function oscEvent(address, args) {
-	
 	if (address == "/wassup") {
 		script.log("OSC Message received "+address+", "+args.length+" arguments");
 		var prop = {
 			"initialIp": args[0],
 			"mac": args[1],
-			"type": args[2]
+			"type": args[2],
+			"name": args[3],
+			"version": args[4]
 		};
-		
+
 		var exists = propExists(prop.mac);
 		
 		if (!exists) {
@@ -178,41 +179,7 @@ function createPropContainer(prop) {
 //////////////////
 
 function setColor(color, propIndex, propType, network) {
-	var oscAddress = "/rgb/fill";
-
-	if (propIndex != "") {
-		var ip = getPropIP(propIndex);
-		if (ip) {
-			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);	
-		}
-	} else if (propType != "") {
-		for (var i = 0; i < props.length; i++) {
-			var p = props[i];
-			var type = p.type;
-
-			if (type == propType) {
-				var ip = props[i].ip.get();
-				local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
-			}
-		}
-	} else if (network != undefined && network != "") {
-		for (var i = 0; i < props.length; i++) {
-			var p = props[i];
-			var ip = p.ip.get();
-			var ipP = ip.split(".");
-			var networkP = network.split(".");
-
-			if (ipP[0] == networkP[0] && ipP[1] == networkP[1] && ipP[2] == networkP[2]) {
-				var ip = props[i].ip.get();
-				local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
-			}
-		}
-	} else {
-		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip.get();
-			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2]);
-		}
-	}
+	sendMsg("/rgb/fill", propIndex, propType, network, color);
 }
 
 function findProp(propIndex) {
@@ -223,114 +190,83 @@ function findProp(propIndex) {
 	} 
 }
 
-function setPoint(color, position, size, propIndex, propType) {
-	var oscAddress = "/rgb/point";
-	
-	if (propIndex != "") {
-		var ip = getPropIP(propIndex);
-		if (ip) {
-			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);	
-		}
-	} else if (propType != "") {
-		for (var i = 0; i < props.length; i++) {
-			var p = props[i];
-			var type = p.type;
-
-			if (type == propType) {
-				var ip = props[i].ip.get();
-				local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
-			}
-		}
-	} else {
-		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip.get();
-			local.sendTo(ip, remotePort, oscAddress, color[0], color[1], color[2], position, size);
-		}
-	}
+function setPoint(color, position, size, propIndex, propType, network) {
+	var values = [color[0], color[1], color[2], position, size];
+	sendMsg("/rgb/point", propIndex, propType, network, values);
 }
 
-function restart(propIndex, propType) {
-	sendMsg("/root/restart", propIndex, propType);
+function restart(propIndex, propType, network) {
+	sendMsg("/root/restart", propIndex, propType, network);
 }
 
-function sleep(propIndex, propType) {
-	sendMsg("/root/sleep", propIndex, propType);
+function sleep(propIndex, propType, network) {
+	sendMsg("/root/sleep", propIndex, propType, network);
 }
 
-function setRGBBrightness(brightness, propIndex, propType) {
-	sendMsgWithValue("/rgb/brightness", brightness, propIndex, propType);
+function setRGBBrightness(brightness, propIndex, propType, network) {
+	sendMsg("/rgb/brightness", propIndex, propType, network, [brightness]);
 }
 
-function setIRBrightness(brightness, propIndex, propType) {
-	sendMsgWithValue("/ir/brightness", brightness, propIndex, propType);
+function setIRBrightness(brightness, propIndex, propType, network) {
+	sendMsg("/ir/brightness", propIndex, propType, network, [brightness]);
 }
 
-function setRGBTemperature(r, g, b, propIndex, propType) {
-	var oscAddress = "/rgb/temperature";
+function setRGBTemperature(r, g, b, propIndex, propType, network) {
+	var values = [r, g, b];
+	sendMsg("/rgb/temperature", propIndex, propType, network, values);
+}
 
-	if (propIndex != "") {
-		var ip = getPropIP(propIndex);
-		if (ip) {
-			local.sendTo(ip, remotePort, oscAddress, r, g, b);	
-		}
-	} else if (propType != "") {
-		for (var i = 0; i < props.length; i++) {
-			var p = props[i];
-			var type = p.type;
+function streamLayerEnable(enabled, propIndex, propType, network) {
+	sendMsg("/streamLayer/enabled", propIndex, propType, network, [enabled]);
+}
 
-			if (type == propType) {
-				var ip = props[i].ip.get();
-				local.sendTo(ip, remotePort, oscAddress, r, g, b);	
-			}
-		}
-	} else {
-		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip.get();
-			local.sendTo(ip, remotePort, oscAddress, r, g, b);	
-		}
-	}
+function playerLayerEnable(enabled, propIndex, propType, network) {
+	sendMsg("/playbackLayer/enabled", propIndex, propType, network, [enabled]);
 }
 
 function playerLoad(name, propIndex, propType, network) {
-	sendMsgWithValue("/player/load", name, propIndex, propType, network);
+	sendMsg("/player/load", propIndex, propType, network, [name]);
+}
+
+function playerPlaySync(name, time, propIndex, propType, network) {
+	sendMsg("/player/playSync", propIndex, propType, network, [name, time]);
 }
 
 function playerPlay(time, propIndex, propType, network) {
-	sendMsgWithValue("/player/play", time, propIndex, propType, network);
+	sendMsg("/player/play", propIndex, propType, network, [time]);
 }
 
-function playerPlayAndIr(time, irBrightness, propIndex, propType) {
-	sendMsgWithValue("/player/play", time, propIndex, propType);
-	setIRBrightness(irBrightness, propIndex, propType);
+function playerPause(propIndex, propType, network) {
+	sendMsg("/player/pause", propIndex, propType, network);
 }
 
-function playerPause(propIndex, propType) {
-	sendMsg("/player/pause", propIndex, propType);
+function playerResume(propIndex, propType, network) {
+	sendMsg("/player/resume", propIndex, propType, network);
 }
 
-function playerResume(propIndex, propType) {
-	sendMsg("/player/resume", propIndex, propType);
+function playerStop(propIndex, propType, network) {
+	sendMsg("/player/stop", propIndex, propType, network);
 }
 
-function playerStop(propIndex, propType) {
-	sendMsg("/player/stop", propIndex, propType);
-}
-
-function playerSeek(time, propIndex, propType) {
-	sendMsgWithValue("/player/seek", time, propIndex, propType);
+function playerSeek(time, propIndex, propType, network) {
+	sendMsg("/player/seek", propIndex, propType, network, [time]);
 }
 
 function playerId(enable, propIndex, propType, network) {
-	sendMsgWithValue("/player/id", enable, propIndex, propType, network);
+	sendMsg("/player/id", propIndex, propType, network, [enable]);
 }
 
-function playerDelete(name, propIndex, propType) {
-	sendMsgWithValue("/player/delete", name, propIndex, propType);
+function playerDeleteV1(name, propIndex, propType, network) {
+	sendMsg("/player/delete", propIndex, propType, network, [name]);
 }
 
-function imuEnable(enable, propIndex, propType)  {
-	sendMsgWithValue("/imu/enabled", enable, propIndex, propType);
-	sendMsgWithValue("/imu/sendLevel", 1, propIndex, propType);
+function filesDelete(folder, propIndex, propType, network) {
+	sendMsg("/files/delete", propIndex, propType, network, [folder]);
+}
+
+function imuEnable(enable, propIndex, propType, network)  {
+	sendMsg("/imu/enabled", enable, propIndex, propType, network, [enable]);
+	sendMsg("/imu/sendLevel", 1, propIndex, propType, network, [1]);
 
 	if (propIndex != "") {
 		var prop = props[parseInt(propIndex)];
@@ -343,16 +279,20 @@ function imuEnable(enable, propIndex, propType)  {
 	}	
 }
 
-function imuUpdateRate(fps, propIndex, propType) {
-	sendMsgWithValue("/imu/updateRate", fps, propIndex, propType);
+function imuUpdateRate(fps, propIndex, propType, network) {
+	sendMsg("/imu/updateRate", propIndex, propType, network, [fps]);
 }
 
-function imuCalibrate(propIndex, propType) {
-	sendMsgWithValue("/imu/calibrate", 1, propIndex, propType);
+function imuCalibrate(propIndex, propType, network) {
+	sendMsg("/imu/calibrate", propIndex, propType, network, [1]);
 }
 
-function genericCommand(oscAddress, value, propIndex, propType) {
-	sendMsgWithValue(oscAddress, value, propIndex, propType);
+function batteryShow(enabled, propIndex, propType, network) {
+	sendMsg("/battery/show", propIndex, propType, network, [enabled]);
+}
+
+function genericCommand(oscAddress, value, propIndex, propType, network) {
+	send(oscAddress, propIndex, propType, network, [value]);
 }
 
 function yo() {
@@ -431,6 +371,11 @@ function getPropIP(index) {
 	return props[index].ip.get();
 }
 
+function getProp(index) {
+	index = parseInt(index);
+	return props[index];
+}
+
 function getPropFromMac (mac) {
 	for (var i = 0; i < props.length; i++) {
 		var cur = props[i];
@@ -452,47 +397,21 @@ function clearShortPressButtons() {
 	}
 }
 
-function sendMsg(oscAddress, propIndex, propType) {
-	if (propIndex != "") {
-		var ip = getPropIP(propIndex);
-		if (ip) {
-			local.sendTo(ip, remotePort, oscAddress);	
-		}
-	} else if (propType != "") {
-		for (var i = 0; i < props.length; i++) {
-			var p = props[i];
-			var type = p.type;
+function getPropsToSend(propIndex, propType, network) {
+	var propsToSend = [];
 
-			if (type == propType) {
-				var ip = props[i].ip.get();
-				local.sendTo(ip, remotePort, oscAddress);
+	if (propIndex != "") { // send to specific prop with index provided
+		var prop = getProp(propIndex);
+		if (prop) propsToSend.push(prop);
+	} else if (propType != "") { // send to specific prop type
+		for (var i = 0; i < props.length; i++) {
+			var prop = props[i];
+
+			if (prop.type == propType) {
+				propsToSend.push(prop);
 			}
 		}
-	} else {
-		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip.get();
-			local.sendTo(ip, remotePort, oscAddress);
-		}
-	}	
-}
-
-function sendMsgWithValue(oscAddress, value, propIndex, propType, network) {
-	if (propIndex != undefined && propIndex != "") {
-		var ip = getPropIP(propIndex);
-		if (ip) {
-			local.sendTo(ip, remotePort, oscAddress, value);	
-		}
-	} else if (propType != undefined && propType != "") {
-		for (var i = 0; i < props.length; i++) {
-			var p = props[i];
-			var type = p.type;
-
-			if (type == propType) {
-				var ip = props[i].ip.get();
-				local.sendTo(ip, remotePort, oscAddress, value);
-			}
-		}
-	} else if (network != undefined && network != "") {
+	} else if (network != undefined && network != "") { // send to props from specific network adapter (matching first 4 IP segments)
 		for (var i = 0; i < props.length; i++) {
 			var p = props[i];
 			var ip = p.ip.get();
@@ -500,20 +419,170 @@ function sendMsgWithValue(oscAddress, value, propIndex, propType, network) {
 			var networkP = network.split(".");
 
 			if (ipP[0] == networkP[0] && ipP[1] == networkP[1] && ipP[2] == networkP[2]) {
-				var ip = props[i].ip.get();
-				local.sendTo(ip, remotePort, oscAddress, value);
+				propsToSend.push(p);
 			}
 		}
-	} else {
+	} else { // send to all props
 		for (var i = 0; i < props.length; i++) {
-			var ip = props[i].ip.get();
-			local.sendTo(ip, remotePort, oscAddress, value);
+			var prop = props[i];
+			propsToSend.push(prop);
 		}
-	}	
+	}
+	
+	return propsToSend;
+}
+
+function getRealOscAddress(oscAddress, prop) {
+	if (prop.version == undefined || prop.version == "") { // assume it's a bentoflow firmware prop
+		script.logWarning("BENTOFLOW Prop");
+		return oscAddressVersioning[oscAddress].bentoflow;
+	} else { // assume it's a blip firmware prop
+		script.logError("BLIP Prop");
+		return oscAddressVersioning[oscAddress].blip;
+	}
+}
+
+function sendMsg(oscAddress, propIndex, propType, network, values) {
+	var propsToSend = getPropsToSend(propIndex, propType, network);
+
+	for (var i=0; i < propsToSend.length; i++) {
+		var prop = propsToSend[i];
+		var ip = prop.ip.get();
+		var realOscAddress = getRealOscAddress(oscAddress, prop);
+
+		if (ip && realOscAddress != undefined && realOscAddress != "") {
+			script.log("Sending " + realOscAddress + " to " + ip);
+
+			if (values == undefined) {
+				local.sendTo(ip, remotePort, realOscAddress);	
+			} else {
+				if (values.length == 1) {
+					local.sendTo(ip, remotePort, realOscAddress, values[0]);	
+				} else if (values.length == 2) {
+					local.sendTo(ip, remotePort, realOscAddress, values[0], values[1]);
+				} else if (values.length == 3) {
+					local.sendTo(ip, remotePort, realOscAddress, values[0], values[1], values[2]);
+				} else if (values.length == 4) {
+					local.sendTo(ip, remotePort, realOscAddress, values[0], values[1], values[2], values[3]);
+				} else if (values.length == 5) {
+					local.sendTo(ip, remotePort, realOscAddress, values[0], values[1], values[2], values[3], values[4]);
+				} else if (values.length == 6) {
+					local.sendTo(ip, remotePort, realOscAddress, values[0], values[1], values[2], values[3], values[4], values[5]);
+				}
+			}
+		}
+	}
 }
 
 var swapArrayElements = function(arr, indexA, indexB) {
 	var temp = arr[indexA];
 	arr[indexA] = arr[indexB];
 	arr[indexB] = temp;
+};
+
+var oscAddressVersioning = {
+	"/ping": {
+		"bentoflow": "/ping",
+		"blip": "/ping"
+	},
+	"/yo": {
+		"bentoflow": "/yo",
+		"blip": "/yo"
+	}, 
+	"/root/restart": {
+		"bentoflow": "/root/restart",
+		"blip": "/root/restart"
+	},
+	"/root/sleep": {
+		"bentoflow": "/root/sleep",
+		"blip": "/root/shutdown"
+	},
+	"/player/load": {
+		"bentoflow": "/player/load",
+		"blip": "/leds/strip1/playbackLayer/load"
+	},
+	"/player/play": {
+		"bentoflow": "/player/play",
+		"blip": "/leds/strip1/playbackLayer/play"
+	},
+	"/player/pause": {
+		"bentoflow": "/player/pause",
+		"blip": "/leds/strip1/playbackLayer/pause"
+	},
+	"/player/resume": {
+		"bentoflow": "/player/resume",
+		"blip": "/leds/strip1/playbackLayer/resume"
+	},
+	"/player/playSync": {
+		"bentoflow": "",
+		"blip": "/leds/strip1/playbackLayer/playSync"
+	},
+	"/player/stop": {
+		"bentoflow": "/player/stop",
+		"blip": "/leds/strip1/playbackLayer/stop"
+	},
+	"/player/seek": {
+		"bentoflow": "/player/seek",
+		"blip": "/leds/strip1/playbackLayer/seek"
+	},
+	"/player/id": {
+		"bentoflow": "/player/id",
+		"blip": "/leds/strip1/playbackLayer/idMode"
+	},
+	"/playbackLayer/enabled": {
+		"bentoflow": "",
+		"blip": "/leds/strip1/playbackLayer/enabled"
+	},
+	"/streamLayer/enabled": {
+		"bentoflow": "",
+		"blip": "/leds/strip1/streamLayer/enabled"
+	},
+	"/player/delete": {
+		"bentoflow": "/player/delete",
+		"blip": "/files/deleteFolder"
+	},
+	"/files/delete": {
+		"bentoflow": "",
+		"blip": "/files/deleteFolder"
+	},
+	"/rgb/fill": {
+		"bentoflow": "/rgb/fill",
+		"blip": ""
+	},
+	"/rgb/point": {
+		"bentoflow": "/rgb/point",
+		"blip": ""
+	},
+	"/rgb/brightness": {
+		"bentoflow": "/rgb/brightness",
+		"blip": "/leds/strip1/brightness"
+	},
+	"/rgb/temperature": {
+		"bentoflow": "/rgb/temperature",
+		"blip": ""
+	},
+	"/ir/brightness": {
+		"bentoflow": "/ir/brightness",
+		"blip": "/ir/value"
+	},
+	"/imu/enabled": {
+		"bentoflow": "/imu/enabled",
+		"blip": "/motion/enabled"
+	},
+	"/imu/sendLevel": {
+		"bentoflow": "/imu/sendLevel",
+		"blip": "/motion/sendLevel"
+	},
+	"/imu/updateRate": {
+		"bentoflow": "/imu/updateRate",
+		"blip": "/motion/orientationSendRate"
+	},
+	"/imu/calibrate": {
+		"bentoflow": "/imu/calibrate",
+		"blip": ""
+	},
+	"/battery/show": {
+		"bentoflow": "",
+		"blip": "/leds/strip1/systemLayer/showBattery"
+	}
 };
