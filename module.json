@@ -3,7 +3,7 @@
 	"type": "OSC",
 	"path": "Hardware",
 	
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Module to control Bento LED props (e.g. flowtoy creators clubs) through the OSC command API",
 	"url": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module",
 	"downloadURL": "https://github.com/jonglissimo/Bento-Prop-OSC-Control-Chataigne-Module/archive/master.zip",
@@ -75,6 +75,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -108,6 +111,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -131,6 +137,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		}, 
@@ -154,6 +163,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		}, 
@@ -188,6 +200,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		}, 
@@ -208,6 +223,9 @@
 				},
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -228,6 +246,9 @@
 				},
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -247,6 +268,9 @@
 				},
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -270,6 +294,9 @@
 				},
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -290,6 +317,9 @@
 				},
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -306,6 +336,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -322,6 +355,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -338,6 +374,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -360,6 +399,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -380,6 +422,9 @@
 				},
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -399,6 +444,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -422,6 +470,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -442,6 +493,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -464,6 +518,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -480,6 +537,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -500,6 +560,51 @@
 				},
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
+				}
+			}
+		},
+
+		"ESPNow Enable": {
+			"menu": "",
+			"callback": "espnowEnable",
+			"parameters": {
+				"Enable": {
+					"type": "Boolean",
+					"default": true
+				},
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
+				}
+			}
+		},
+
+		"Save Settings": {
+			"menu": "",
+			"callback": "saveSettings",
+			"parameters": {
+				"Prop Index": {
+					"type": "String"
+				},
+				"Prop Type": {
+					"type": "String"
+				}, 
+				"Network": {
+					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -516,6 +621,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -532,6 +640,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		},
@@ -564,6 +675,9 @@
 				}, 
 				"Network": {
 					"type": "String"
+				}, 
+				"ESPNow Bridge Forward Only": {
+					"type": "Boolean"
 				}
 			}
 		}

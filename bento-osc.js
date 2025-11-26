@@ -66,7 +66,7 @@ function moduleValueChanged(param) {
 
 function oscEvent(address, args) {
 	if (address == "/wassup") {
-		script.log("OSC Message received "+address+", "+args.length+" arguments");
+		// script.log("OSC Message received "+address+", "+args.length+" arguments");
 		var prop = {
 			"initialIp": args[0],
 			"mac": args[1],
@@ -105,7 +105,7 @@ function oscEvent(address, args) {
 		prop = getPropFromMac(mac);
 
 		prop.buttonShortPress.set(true);
-		script.log("button press");
+		// script.log("button press");
 	}
 }
 
@@ -178,8 +178,8 @@ function createPropContainer(prop) {
 // Command
 //////////////////
 
-function setColor(color, propIndex, propType, network) {
-	sendMsg("/rgb/fill", propIndex, propType, network, color);
+function setColor(color, propIndex, propType, network, bridgeForward) {
+	sendMsg("/rgb/fill", propIndex, propType, network, bridgeForward, color);
 }
 
 function findProp(propIndex) {
@@ -190,83 +190,91 @@ function findProp(propIndex) {
 	} 
 }
 
-function setPoint(color, position, size, propIndex, propType, network) {
+function setPoint(color, position, size, propIndex, propType, network, bridgeForward) {
 	var values = [color[0], color[1], color[2], position, size];
-	sendMsg("/rgb/point", propIndex, propType, network, values);
+	sendMsg("/rgb/point", propIndex, propType, network, bridgeForward, values);
 }
 
-function restart(propIndex, propType, network) {
-	sendMsg("/root/restart", propIndex, propType, network);
+function espnowEnable(enable, propIndex, propType, network, bridgeForward) {
+	sendMsg("/comm/espnow/enabled", propIndex, propType, network, bridgeForward, [enable]); 
 }
 
-function sleep(propIndex, propType, network) {
-	sendMsg("/root/sleep", propIndex, propType, network);
+function saveSettings(propIndex, propType, network, bridgeForward) {
+	sendMsg("/settings/saveSettings", propIndex, propType, network, bridgeForward);
 }
 
-function setRGBBrightness(brightness, propIndex, propType, network) {
-	sendMsg("/rgb/brightness", propIndex, propType, network, [brightness]);
+function restart(propIndex, propType, network, bridgeForward) {
+	sendMsg("/root/restart", propIndex, propType, network, bridgeForward);
 }
 
-function setIRBrightness(brightness, propIndex, propType, network) {
-	sendMsg("/ir/brightness", propIndex, propType, network, [brightness]);
+function sleep(propIndex, propType, network, bridgeForward) {
+	sendMsg("/root/sleep", propIndex, propType, network, bridgeForward);
 }
 
-function setRGBTemperature(r, g, b, propIndex, propType, network) {
+function setRGBBrightness(brightness, propIndex, propType, network, bridgeForward) {
+	sendMsg("/rgb/brightness", propIndex, propType, network, bridgeForward, [brightness]);
+}
+
+function setIRBrightness(brightness, propIndex, propType, network, bridgeForward) {
+	sendMsg("/ir/brightness", propIndex, propType, network, bridgeForward, [brightness]);
+}
+
+function setRGBTemperature(r, g, b, propIndex, propType, network, bridgeForward) {
 	var values = [r, g, b];
-	sendMsg("/rgb/temperature", propIndex, propType, network, values);
+	sendMsg("/rgb/temperature", propIndex, propType, network, bridgeForward, values);
 }
 
-function streamLayerEnable(enabled, propIndex, propType, network) {
-	sendMsg("/streamLayer/enabled", propIndex, propType, network, [enabled]);
+function streamLayerEnable(enabled, propIndex, propType, network, bridgeForward) {
+	sendMsg("/streamLayer/enabled", propIndex, propType, network, bridgeForward, [enabled]);
 }
 
-function playerLayerEnable(enabled, propIndex, propType, network) {
-	sendMsg("/playbackLayer/enabled", propIndex, propType, network, [enabled]);
+function playerLayerEnable(enabled, propIndex, propType, network, bridgeForward) {
+	sendMsg("/playbackLayer/enabled", propIndex, propType, network, bridgeForward, [enabled]);
 }
 
-function playerLoad(name, propIndex, propType, network) {
-	sendMsg("/player/load", propIndex, propType, network, [name]);
+function playerLoad(name, propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/load", propIndex, propType, network, bridgeForward, [name]);
 }
 
-function playerPlaySync(name, time, propIndex, propType, network) {
-	sendMsg("/player/playSync", propIndex, propType, network, [name, time]);
+function playerPlaySync(name, time, propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/playSync", propIndex, propType, network, bridgeForward, [name, time]);
 }
 
-function playerPlay(time, propIndex, propType, network) {
-	sendMsg("/player/play", propIndex, propType, network, [time]);
+function playerPlay(time, propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/play", propIndex, propType, network, bridgeForward, [time]);
 }
 
-function playerPause(propIndex, propType, network) {
-	sendMsg("/player/pause", propIndex, propType, network);
+function playerPause(propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/pause", propIndex, propType, network, bridgeForward);
 }
 
-function playerResume(propIndex, propType, network) {
-	sendMsg("/player/resume", propIndex, propType, network);
+function playerResume(propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/resume", propIndex, propType, network, bridgeForward);
 }
 
-function playerStop(propIndex, propType, network) {
-	sendMsg("/player/stop", propIndex, propType, network);
+function playerStop(propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/stop", propIndex, propType, network, bridgeForward);
 }
 
-function playerSeek(time, propIndex, propType, network) {
-	sendMsg("/player/seek", propIndex, propType, network, [time]);
+function playerSeek(time, propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/seek", propIndex, propType, network, bridgeForward, [time]);
 }
 
-function playerId(enable, propIndex, propType, network) {
-	sendMsg("/player/id", propIndex, propType, network, [enable]);
+function playerId(enable, propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/id", propIndex, propType, network, bridgeForward, [enable]);
 }
 
-function playerDeleteV1(name, propIndex, propType, network) {
-	sendMsg("/player/delete", propIndex, propType, network, [name]);
+function playerDeleteV1(name, propIndex, propType, network, bridgeForward) {
+	sendMsg("/player/delete", propIndex, propType, network, bridgeForward, [name]);
 }
 
-function filesDelete(folder, propIndex, propType, network) {
-	sendMsg("/files/delete", propIndex, propType, network, [folder]);
+function filesDelete(folder, propIndex, propType, network, bridgeForward) {
+	sendMsg("/files/delete", propIndex, propType, network, bridgeForward, [folder]);
 }
 
-function imuEnable(enable, propIndex, propType, network)  {
-	sendMsg("/imu/enabled", enable, propIndex, propType, network, [enable]);
-	sendMsg("/imu/sendLevel", 1, propIndex, propType, network, [1]);
+function imuEnable(enable, propIndex, propType, network, bridgeForward)  {
+	sendMsg("/imu/enabled", enable, propIndex, propType, network, bridgeForward, [enable]);
+	sendMsg("/imu/sendLevel", 1, propIndex, propType, network, bridgeForward, [1]);
 
 	if (propIndex != "") {
 		var prop = props[parseInt(propIndex)];
@@ -279,20 +287,20 @@ function imuEnable(enable, propIndex, propType, network)  {
 	}	
 }
 
-function imuUpdateRate(fps, propIndex, propType, network) {
-	sendMsg("/imu/updateRate", propIndex, propType, network, [fps]);
+function imuUpdateRate(fps, propIndex, propType, network, bridgeForward) {
+	sendMsg("/imu/updateRate", propIndex, propType, network, bridgeForward, [fps]);
 }
 
-function imuCalibrate(propIndex, propType, network) {
-	sendMsg("/imu/calibrate", propIndex, propType, network, [1]);
+function imuCalibrate(propIndex, propType, network, bridgeForward) {
+	sendMsg("/imu/calibrate", propIndex, propType, network, bridgeForward, [1]);
 }
 
-function batteryShow(enabled, propIndex, propType, network) {
-	sendMsg("/battery/show", propIndex, propType, network, [enabled]);
+function batteryShow(enabled, propIndex, propType, network, bridgeForward) {
+	sendMsg("/battery/show", propIndex, propType, network, bridgeForward, [enabled]);
 }
 
-function genericCommand(oscAddress, value, propIndex, propType, network) {
-	send(oscAddress, propIndex, propType, network, [value]);
+function genericCommand(oscAddress, value, propIndex, propType, network, bridgeForward) {
+	send(oscAddress, propIndex, propType, network, bridgeForward, [value]);
 }
 
 function yo() {
@@ -432,27 +440,37 @@ function getPropsToSend(propIndex, propType, network) {
 	return propsToSend;
 }
 
-function getRealOscAddress(oscAddress, prop) {
+function getRealOscAddress(oscAddress, prop, bridgeForward) {
+	var bridgeForwardPrefix = "/dev/-1";
+
 	if (prop.version == undefined || prop.version == "") { // assume it's a bentoflow firmware prop
-		script.logWarning("BENTOFLOW Prop");
-		return oscAddressVersioning[oscAddress].bentoflow;
+		var address = oscAddressVersioning[oscAddress].bentoflow;
+
+		if (bridgeForward) {
+			return bridgeForwardPrefix + address;
+		} else {
+			return address;
+		}
 	} else { // assume it's a blip firmware prop
-		script.logError("BLIP Prop");
-		return oscAddressVersioning[oscAddress].blip;
+		var address = oscAddressVersioning[oscAddress].blip;
+
+		if (bridgeForward) {
+			return bridgeForwardPrefix + address
+		} else {
+			return address;
+		}
 	}
 }
 
-function sendMsg(oscAddress, propIndex, propType, network, values) {
+function sendMsg(oscAddress, propIndex, propType, network, bridgeForward, values) {
 	var propsToSend = getPropsToSend(propIndex, propType, network);
 
 	for (var i=0; i < propsToSend.length; i++) {
 		var prop = propsToSend[i];
 		var ip = prop.ip.get();
-		var realOscAddress = getRealOscAddress(oscAddress, prop);
+		var realOscAddress = getRealOscAddress(oscAddress, prop, bridgeForward);
 
 		if (ip && realOscAddress != undefined && realOscAddress != "") {
-			script.log("Sending " + realOscAddress + " to " + ip);
-
 			if (values == undefined) {
 				local.sendTo(ip, remotePort, realOscAddress);	
 			} else {
@@ -584,5 +602,13 @@ var oscAddressVersioning = {
 	"/battery/show": {
 		"bentoflow": "",
 		"blip": "/leds/strip1/systemLayer/showBattery"
+	},
+	"/comm/espnow/enabled": {
+		"bentoflow": "",
+		"blip": "/comm/espnow/enabled"
+	},
+	"/settings/saveSettings": {
+		"bentoflow": "",
+		"blip": "/settings/saveSettings"
 	}
 };
