@@ -233,11 +233,11 @@ function playerLayerEnable(enabled, propIndex, propType, network, bridgeForward)
 }
 
 function playerLoad(name, propIndex, propType, network, bridgeForward) {
-	sendMsg("/player/load", propIndex, propType, network, bridgeForward, [name]);
+	sendMsg("/player/load", propIndex, propType, network, bridgeForward, [name, 1]);
 }
 
 function playerPlaySync(name, time, propIndex, propType, network, bridgeForward) {
-	sendMsg("/player/playSync", propIndex, propType, network, bridgeForward, [name, time]);
+	sendMsg("/player/playSync", propIndex, propType, network, bridgeForward, [name, time, 1]);
 }
 
 function playerPlay(time, propIndex, propType, network, bridgeForward) {
@@ -300,7 +300,7 @@ function batteryShow(enabled, propIndex, propType, network, bridgeForward) {
 }
 
 function genericCommand(oscAddress, value, propIndex, propType, network, bridgeForward) {
-	send(oscAddress, propIndex, propType, network, bridgeForward, [value]);
+	sendMsg(oscAddress, propIndex, propType, network, bridgeForward, [value]);
 }
 
 function yo() {
